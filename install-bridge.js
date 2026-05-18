@@ -1,4 +1,4 @@
-﻿
+
 
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -44,7 +44,7 @@ for (const testPath of possiblePaths) {
 if (!afterEffectsPath) {
   console.error('Error: Could not find After Effects installation.');
   console.error('Please manually copy the bridge script to your After Effects ScriptUI Panels folder.');
-  console.error('Source: build/scripts/mcp-bridge-auto.jsx');
+  console.error('Source: build/scripts/mcp-bridge-auto-v2.jsx');
   if (isMac) {
     console.error('Target: /Applications/Adobe After Effects [VERSION]/Scripts/ScriptUI Panels/');
   } else {
@@ -54,18 +54,18 @@ if (!afterEffectsPath) {
 }
 
 
-const sourceScript = path.join(__dirname, 'build', 'scripts', 'mcp-bridge-auto.jsx');
+const sourceScript = path.join(__dirname, 'build', 'scripts', 'mcp-bridge-auto-v2.jsx');
 
 function collectDestinationScripts() {
   const destinations = [];
 
   if (isMac) {
-    destinations.push(path.join(afterEffectsPath, 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto.jsx'));
+    destinations.push(path.join(afterEffectsPath, 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto-v2.jsx'));
     return destinations;
   }
 
   
-  destinations.push(path.join(afterEffectsPath, 'Support Files', 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto.jsx'));
+  destinations.push(path.join(afterEffectsPath, 'Support Files', 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto-v2.jsx'));
 
   
   const appData = process.env.APPDATA;
@@ -75,8 +75,8 @@ function collectDestinationScripts() {
       for (const versionDir of fs.readdirSync(aeRoot)) {
         const versionRoot = path.join(aeRoot, versionDir);
         if (fs.statSync(versionRoot).isDirectory()) {
-          destinations.push(path.join(versionRoot, 'Scripts', 'mcp-bridge-auto.jsx'));
-          destinations.push(path.join(versionRoot, 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto.jsx'));
+          destinations.push(path.join(versionRoot, 'Scripts', 'mcp-bridge-auto-v2.jsx'));
+          destinations.push(path.join(versionRoot, 'Scripts', 'ScriptUI Panels', 'mcp-bridge-auto-v2.jsx'));
         }
       }
     }
@@ -176,7 +176,7 @@ try {
   }
   console.log('3. Enable "Allow Scripts to Write Files and Access Network"');
   console.log('4. Restart After Effects');
-  console.log('5. Open the bridge panel: Window > mcp-bridge-auto.jsx');
+  console.log('5. Open the bridge panel: Window > mcp-bridge-auto-v2.jsx');
 } catch (error) {
   console.error(`Error installing script: ${error.message}`);
   console.error('\nPlease try manual installation:');

@@ -1,4 +1,4 @@
-﻿
+
 
 
 
@@ -2173,7 +2173,7 @@ if (typeof JSON.stringify !== "function") {
 }
 var aeVersion = parseFloat(app.version);
 var isAE2025OrLater = aeVersion >= 25.0;
-var panel = new Window("palette", "MCP Bridge Auto", undefined);
+var panel = new Window("palette", "MCP Bridge Auto v2", undefined);
 panel.orientation = "column";
 panel.alignChildren = ["fill", "top"];
 panel.spacing = 10;
@@ -2319,6 +2319,23 @@ function getLayerInfo() {
     
     return JSON.stringify(result, null, 2);
 }
+function createProject(args) {
+    try {
+        app.newProject();
+        var response = { status: "success", message: "New project created successfully" };
+        if (args.savePath) {
+            var myFile = new File(args.savePath);
+            app.project.save(myFile);
+            response.savedTo = args.savePath;
+            response.message += " and saved to " + args.savePath;
+        }
+        return JSON.stringify(response, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+
 function executeCommand(command, args) {
     var result = "";
     
@@ -2397,6 +2414,11 @@ function executeCommand(command, args) {
                 logToPanel("Calling setEffectProperty function...");
                 result = setEffectProperty(args);
                 logToPanel("Returned from setEffectProperty.");
+                break;
+            case "createProject":
+                logToPanel("Calling createProject function...");
+                result = createProject(args);
+                logToPanel("Returned from createProject.");
                 break;
             case "setEffectKeyframe":
                 logToPanel("Calling setEffectKeyframe function...");

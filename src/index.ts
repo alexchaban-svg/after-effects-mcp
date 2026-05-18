@@ -1,4 +1,4 @@
-﻿import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { execSync } from "child_process";
 import * as fs from "fs";
@@ -292,6 +292,7 @@ server.tool(
   async ({ script, parameters = {} }) => {
     
     const allowedScripts = [
+      "createProject",
       "listCompositions", 
       "getProjectInfo", 
       "getLayerInfo", 
@@ -469,7 +470,7 @@ To use this integration with After Effects, follow these steps:
    - Open a project that you want to work with
 
 3. **Open the MCP Bridge Auto panel**
-   - In After Effects, go to Window > mcp-bridge-auto.jsx
+   - In After Effects, go to Window > mcp-bridge-auto-v2.jsx
    - The panel will automatically check for commands every few seconds
 
 4. **Run scripts through MCP**
@@ -482,6 +483,7 @@ To use this integration with After Effects, follow these steps:
    - This will retrieve the results from After Effects
 
 Available scripts:
+- createProject: Create a new project and optionally save it
 - getProjectInfo: Information about the current project
 - listCompositions: List all compositions in the project
 - getLayerInfo: Information about layers in the active composition
@@ -523,6 +525,42 @@ Note: The auto-running panel can be left open in After Effects to continuously l
         }
       ]
     };
+  }
+);
+
+
+server.tool(
+  "create-project",
+  "Create a new project in After Effects and optionally save it to a path",
+  {
+    savePath: z.string().optional().describe("Absolute path to save the new project (e.g. /path/to/project.aep)")
+  },
+  async (params) => {
+    try {
+      clearResultsFile();
+      writeCommandFile("createProject", params);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Command to create a new project has been queued.\n` +
+                  `Please ensure the "MCP Bridge Auto" panel is open in After Effects.\n` +
+                  `Use the "get-results" tool after a few seconds to check for results.`
+          }
+        ]
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error queuing project creation: ${String(error)}`
+          }
+        ],
+        isError: true
+      };
+    }
   }
 );
 
